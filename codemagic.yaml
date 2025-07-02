@@ -1,7 +1,7 @@
 workflows:
   build-foran:
     name: Build Foran APK
-    instance_type: mac_mini
+instance_type: linux_x2
     max_build_duration: 10
     environment:
       vars:
