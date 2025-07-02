@@ -8,9 +8,10 @@ workflows:
         PACKAGE_NAME: "com.foran.app"
       node: "lts/*"
     scripts:
-      - name: Install dependencies
+      - name: Prepare project
         script: |
           npm install
+          npx cap init فوراً com.foran.app --web-dir=www --npm-client=npm
           npx cap add android
           npx cap sync android
       - name: Build APK
