@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فوراً - منصة الخدمات الذكية</title>
+
+<!-- ⭐ PWA: Web Manifest (inline, لا تحتاج manifest.json خارجي) -->
+<meta name="theme-color" content="#18456e" />
+
+<!-- Manifest Inline + تفعيل تلقائي -->
+<script id="manifest-inline" type="application/manifest+json">
+{
+  "name": "فوراً - منصة الخدمات الذكية",
+  "short_name": "فوراً",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f8fafb",
+  "theme_color": "#18456e",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABg0lEQVR42mNgoAX4zwAB/l8w/M/QRlf2w2XlAD4jUJ9FYiWYmTSCBEvw2RaGZkA8Tl0jOAAKMES2AVrAHE+gfwQiEIAWwATsRWBLLwBl5DwD4/4HwAC2Qgfq1CkYhNoRDIzGLQIMJjACw3Ajyk9QnEq1DsC0Vdg0KjIJFMCjYFZsA0Mygo8UAxBU2kE/wES/AKwAxF5O5UJVA+JQBTTp4BlFFMQx/AnQWBnJAABfKgAXV+QwSAcR9S8CjKMkEN4gANMBADrj+v5KZckdSZCkQhZo/kp8CkLwo4v8GkGi3MZgwJQTiACZBkA8XqQAUStAeR6GYYALfNkOAaEx1DcAFRxQfDEgiMgAA4lYCSxAH4mVQ/3MMsJtDJMgeIGeAUGeQFODXQW7gdweIEcNQOiAXQAi1IZAAAhKcBe+8e93kAAAAASUVORK5CYII=",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+</script>
+<link rel="manifest" href="data:application/manifest+json," id="manifest-link"/>
+<script>
+(function() {
+  const manifestScript = document.getElementById('manifest-inline');
+  if (manifestScript) {
+    const manifestJson = encodeURIComponent(manifestScript.textContent.trim());
+    document.getElementById('manifest-link').setAttribute('href', 'data:application/manifest+json,' + manifestJson);
+  }
+})();
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* بقية الـ CSS ... */
+  :root {
+    --primary: #18456e;
+    --accent: #27bda5;
+    --danger: #c0392b;
+    --bg-light: #f8fafb;
+    --bg-dark: #1b2536;
+    --pie-colors: #27bda5,#ffd200,#ff6f00,#29b6f6,#c0392b,#9c27b0,#43a047,#ff9800,#8bc34a,#f44336;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0; padding: 0;
+    background: var(--bg-light);
+    color: var(--primary);
+    min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  body.dark {
+    background: var(--bg-dark);
+    color: #fff;
+  }
+  /* Navbar/Brandbar */
+  .brandbar {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    padding: 15px 22px 12px 12px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1100;
+    box-shadow: 0 2.5px 18px #0002;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    direction: rtl;
+  }
+  /* Sidebar */
+  .sidebar {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    padding: 20px 10px 25px 5px;
+    width: 220px;
+    min-width: 200px;
+    min-height: 100vh;
+    box-shadow: 0 3px 15px #0001;
+    position: fixed;
+    top: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 1200;
+    transition: transform 0.3s ease;
+  }
+  .sidebar h1 {
+    color: #fff;
+    font-size: 1.25rem;
+    margin: 0 0 18px;
+    text-align: center;
+    font-weight: 700;
+  }
+  .sidebar button, .sidebar .toggle-theme {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 10px 7px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: right;
+    transition: background 0.2s;
+  }
+  .sidebar button:hover, .sidebar .toggle-theme:hover {
+    background: rgba(255,255,255,0.14);
+  }
+  .sidebar button.active {
+    background: rgba(255,255,255,0.26);
+    font-weight: 700;
+  }
+  .sidebar .toggle-theme {
+    margin-top: auto;
+  }
+  /* Hamburger */
+  .hamburger {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 28px;
+    height: 22px;
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    z-index: 1301;
+  }
+  .hamburger div {
+    height: 3.5px;
+    background-color: var(--primary);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+  }
+  .hamburger.active div:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  .hamburger.active div:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger.active div:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+  /* Overlay */
+.overlay-nav {
+    position: fixed;
+    inset: 0;
+    background: #0005;
+    backdrop-filter: blur(4px); /* الضبابية */
+    z-index: 1199;
+    display: none;
+    transition: background 0.2s;
+}
+.overlay-nav.active {
+    display: block;
+}
+  /* Main content */
+  .main {
+    margin-right: 220px;
+    padding: 80px 2vw 24px 2vw;
+    max-width: 1100px;
+    min-height: 100vh;
+    transition: margin 0.3s ease;
+  }
+  /* Responsive */
+  @media (max-width: 900px) {
+    .sidebar {
+      width: 240px;
+      min-width: unset;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      right: 0;
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: -6px 0 28px #0005;
+    }
+    .sidebar.active {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: all;
+      display: flex;
+    }
+    .hamburger {
+      display: flex;
+    }
+    .overlay-nav {
+      display: none;
+    }
+    .overlay-nav.active {
+      display: block;
+    }
+    .main {
+      margin-right: 0;
+      padding: 80px 1rem 24px 1rem;
+    }
+  }
+  /* Cards Grid */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px 24px;
+  }
+  .section-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 15px #0001;
+    padding: 22px 10px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.15em;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border 0.2s, transform 0.15s;
+    min-height: 110px;
+    user-select: none;
+  }
+  .section-card:hover, .section-card:focus {
+    border-color: var(--primary);
+    outline: none;
+    transform: scale(1.05);
+  }
+  .section-emoji {
+    font-size: 2.5em;
+    margin-bottom: 12px;
+  }
+  /* Provider Card */
+  .provider-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 13px #0002;
+    padding: 14px 12px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: box-shadow 0.2s;
+    cursor: default;
+    user-select: none;
+  }
+  .provider-card:focus-within, .provider-card:hover {
+    box-shadow: 0 6px 24px #0004;
+  }
+  body.dark .provider-card, body.dark .section-card {
+    background: #222c;
+    color: #fff;
+  }
+  .provider-emoji {
+    font-size: 1.85em;
+    margin-left: 8px;
+  }
+  .provider-info {
+    flex: 1;
+  }
+  .provider-info .row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 5px;
+    font-size: 0.95em;
+  }
+  .provider-info .label {
+    color: #888;
+    min-width: 65px;
+    font-weight: 600;
+  }
+  .provider-info .value {
+    font-weight: 500;
+  }
+  /* Stars */
+  .stars {
+    color: #ffbe33;
+    font-size: 1.1em;
+    user-select: none;
+  }
+  /* Card Actions */
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .card-actions button {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #fff;
+    transition: background 0.15s ease;
+  }
+  .call {
+    background: #2980b9;
+  }
+  .call:hover {
+    background: #1e5a8a;
+  }
+  .whatsapp {
+    background: #25d366;
+  }
+  .whatsapp:hover {
+    background: #1eb955;
+  }
+  .share {
+    background: #ffbe33;
+    color: #111;
+  }
+  .share:hover {
+    background: #e1a602;
+  }
+  .rate {
+    background: var(--accent);
+  }
+  .rate:hover {
+    background: #1f9586;
+  }
+  .delete {
+    background: var(--danger);
+  }
+  .delete:hover {
+    background: #9a2d23;
+  }
+  .edit {
+    background: #5e35b1;
+  }
+  .edit:hover {
+    background: #4a2792;
+  }
+  /* Buttons */
+  .show-modal-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.22s ease;
+  }
+  .show-modal-btn:hover, .submit-btn:hover {
+    background: var(--accent);
+  }
+  .submit-btn {
+    background: var(--accent);
+    color: #fff;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    user-select: none;
+    transition: background 0.22s ease;
+  }
+  .submit-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+  .hidden {
+    display: none !important;
+  }
+  /* Forms */
+  form {
+    background: #fff;
+    padding: 18px 14px;
+    max-width: 460px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px #0001;
+    margin-bottom: 16px;
+  }
+  body.dark form {
+    background: #232834;
+    color: #fff;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 9px 10px;
+    margin: 8px 0 6px;
+    border: 1.4px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.15s ease;
+    background: #fafdff;
+    font-family: 'Cairo', sans-serif;
+  }
+  body.dark input, body.dark select, body.dark textarea {
+    background: #222c;
+    border-color: #333;
+    color: #eee;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  input[readonly] {
+    background: #f3f3f3;
+    color: #888;
+  }
+  textarea {
+    resize: vertical;
+  }
+  /* Search bar */
+  .searchbar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .searchbar {
+    flex: 1;
+    font-size: 1rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1.3px solid #bbb;
+  }
+  .searchbar:focus {
+    border-color: var(--primary);
+    outline: none;
+  }
+  /* Toast notifications */
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 25px;
+    min-width: 220px;
+    background: #111e;
+    color: #fff;
+    padding: 13px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px #0004;
+    z-index: 2000;
+    font-size: 1.1rem;
+    text-align: center;
+    animation: toastIn 0.35s cubic-bezier(.21,.6,.38,1.09);
+    user-select: none;
+  }
+  @keyframes toastIn {
+    0% {opacity:0; transform:translateY(50px) scale(0.92);}
+    100% {opacity:1; transform:translateY(0) scale(1);}
+  }
+  /* Modal */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: #0007;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+  }
+  .modal-box {
+    background: #fff;
+    color: #222;
+    border-radius: 14px;
+    min-width: 260px;
+    max-width: 95vw;
+    max-height: 90vh;
+    box-shadow: 0 4px 26px #0003;
+    position: relative;
+    animation: toastIn 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    direction: rtl;
+  }
+  .modal-content-scroll {
+    overflow-y: auto;
+    padding: 20px 20px 12px;
+    flex: 1;
+  }
+  .modal-actions-bottom {
+    background: #f7fafd;
+    border-top: 1px solid #eee;
+    padding: 10px 16px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+  body.dark .modal-box {
+    background: #222c;
+    color: #fff;
+  }
+  body.dark .modal-actions-bottom {
+    background: #232834;
+    border-top: 1px solid #333;
+  }
+  .modal-close {
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    font-size: 1.6rem;
+    color: #999;
+    cursor: pointer;
+    border: none;
+    background: none;
+    user-select: none;
+  }
+  .modal-close:hover {
+    color: var(--danger);
+  }
+  /* Tooltip text */
+  .tooltip {
+    font-size: 0.92em;
+    color: #666;
+    margin-bottom: 4px;
+  }
+  body.dark .tooltip {
+    color: #aaa;
+  }
+  /* Filter row */
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-row select {
+    flex: 1 1 140px;
+    min-width: 130px;
+  }
+  /* Download button */
+  .dl-btn {
+    background: var(--primary);
+    color: #fff;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 9px;
+    font-size: 1.03rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.22s ease;
+    margin-bottom: 18px;
+  }
+  .dl-btn:hover {
+    background: var(--accent);
+  }
+  /* Feedback buttons */
+  .delete-feedback-btn {
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 10px;
+    user-select: none;
+    transition: background 0.22s ease;
+  }
+  .delete-feedback-btn:hover {
+    background: #a72317;
+  }
+  .add-feedback-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 11px 22px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 14px;
+    user-select: none;
+    transition: background 0.22s ease;
+    align-self: flex-start;
+  }
+  .add-feedback-btn:hover {
+    background: #1f9586;
+  }
+  /* Charts Wrap */
+.charts-wrap {
+  display: flex;
+  gap: 12px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  align-items: stretch;
+}
+.chart-card {
+  min-width: 140px;
+  max-width: 230px;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 8px #0001;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px 5px 8px 5px;
+  margin: 0;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.chart-title {
+  font-size: 1em;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+.canvas-chart {
+  max-width: 100% !important;
+  max-height: 92px !important;
+  margin-top: 2px;
+}
+@media (max-width: 650px) {
+  .charts-wrap {
+    gap: 7px;
+  }
+  .chart-card {
+    min-width: 110px;
+    max-width: 150px;
+    height: 98px;
+    padding: 4px 2px;
+  }
+}
+  @media (max-width: 900px) {
+    .charts-wrap {
+      flex-direction: column;
+      gap: 12px;
+    }
+  }
+  @media (max-width: 600px) {
+    .modal-box {
+      max-width: 95vw;
+    }
+    .modal-content-scroll {
+      padding: 12px 8px 10px;
+    }
+  }
+  @media (max-width: 480px) {
+    .main {
+      padding: 70px 1rem 10px;
+    }
+    .modal-box {
+      padding: 0;
+      border-radius: 0;
+      height: 100vh;
+      max-height: 100vh;
+    }
+  }
+  /* Admin modal */
+  .admin-modal-bg {
+    background: #0008;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3005;
+  }
+  .admin-modal {
+    background: #fff;
+    color: #111;
+    border-radius: 12px;
+    min-width: 220px;
+    padding: 22px 18px 16px;
+    box-shadow: 0 4px 28px #0002;
+    direction: rtl;
+    font-size: 1.05rem;
+  }
+  .admin-modal .pass-input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    gap: 10px;
+  }
+  .admin-modal input[type="password"],
+  .admin-modal input[type="text"] {
+    font-size: 1.12em;
+    border: 1.5px solid #eee;
+    padding: 8px 10px;
+    border-radius: 8px;
+    width: 90px;
+    text-align: center;
+    letter-spacing: 4px;
+    font-family: 'Cairo', sans-serif;
+  }
+  .admin-modal .showhide {
+    background: none;
+    border: none;
+    font-size: 1.4em;
+    cursor: pointer;
+    color: #444;
+    margin-right: 5px;
+    user-select: none;
+  }
+  .admin-error {
+    color: var(--danger);
+    min-height: 22px;
+    font-size: 1em;
+    margin-bottom: 6px;
+    user-select: none;
+  }
+.stats-cards {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+.stat-card {
+  background: #fff;
+  border-radius: 11px;
+  box-shadow: 0 2px 10px #0001;
+  padding: 14px 17px;
+  font-size: 1.07em;
+  min-width: 135px;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+body.dark .stat-card { background: #232834; color: #fff; }
+.stat-card span { font-size: 1.35em; color: var(--primary); margin-right: 6px; }
+
+.admin-section-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 3px 20px #0001;
+  padding: 24px 18px 20px 18px;
+  margin-bottom: 24px;
+  margin-top: 14px;
+  transition: box-shadow 0.18s;
+}
+body.dark .admin-section-card {
+  background: #232834;
+  color: #fff;
+}
+.admin-section-card h3 {
+  margin-top: 0;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 18px;
+}
+body.dark .admin-section-card h3 {
+  color: #ffd200;
+}
+</style>
+</head>
+<body>
+<!-- Brand Bar -->
+<header class="brandbar" role="banner" aria-label="شريط الموقع">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <!-- شعار فوراً الجديد -->
+    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="شعار فوراً" style="background:#fff;border-radius:50%;box-shadow:0 2px 8px #18456e22;">
+      <circle cx="24" cy="24" r="20" fill="#22c1c3"/>
+      <path d="M16 28 L24 16 L32 28" stroke="#18456e" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M24 34 L24 22" stroke="#ffd200" stroke-width="3.2" stroke-linecap="round"/>
+      <circle cx="24" cy="16" r="3.5" fill="#ffd200"/>
+    </svg>
+    <span style="font-weight:900;font-size:1.35em;letter-spacing:.5px;">فوراً - منصة الخدمات الذكية</span>
+  </div>
+</header>
+
+  <!-- Hamburger -->
+  <button id="hamburger" class="hamburger" aria-label="فتح القائمة الجانبية" aria-expanded="false" aria-controls="sidebarNav" type="button" tabindex="0">
+    <div></div><div></div><div></div>
+  </button>
+
+  <!-- Sidebar Navigation -->
+  <nav id="sidebarNav" class="sidebar" aria-label="القائمة الرئيسية" role="navigation">
+    <h1>فوراً</h1>
+    <button data-page="home" type="button">🏠 الرئيسية</button>
+    <button data-page="register" type="button">✍️ طلب تسجيل مزوّد خدمة</button>
+    <button data-page="filter" type="button">🔍 بحث وفلترة</button>
+    <button id="adminBtn" type="button">⚙️ لوحة الإدارة</button>
+    <button class="toggle-theme" id="themeBtn" type="button" aria-pressed="false">🌓 تبديل النمط</button>
+    <button class="add-feedback-btn" id="feedbackBtn" type="button">💬 أضف شكوى/اقتراح</button>
+  </nav>
+
+  <!-- Overlay for mobile -->
+  <div id="navOverlay" class="overlay-nav" tabindex="-1" aria-hidden="true"></div>
+
+  <!-- Toast container -->
+  <div id="toastRoot" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Modal container -->
+  <div id="modalRoot" aria-live="assertive" aria-atomic="true" class="hidden"></div>
+
+  <!-- Main Content -->
+  <main id="mainContent" class="main" role="main" tabindex="0" aria-label="المحتوى الرئيسي"></main>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+"use strict";
+
+// ⭐ Local Analytics – تخزين العدادات في localStorage
+const _analytics = JSON.parse(localStorage.getItem('analytics') || '{}');
+function recordEvent(name) {
+  _analytics[name] = (_analytics[name] || 0) + 1;
+  localStorage.setItem('analytics', JSON.stringify(_analytics));
+}
+
+// --- Constants & Globals ---
+const ADMIN_PASS = "12345";
+const STORAGE_KEYS = {
+  providers: "foran_providers",
+  requests: "foran_requests",
+  feedbacks: "foran_feedbacks",
+  ratings: "foran_ratings",
+};
+
+let providers = JSON.parse(localStorage.getItem(STORAGE_KEYS.providers) || "[]");
+let requests  = JSON.parse(localStorage.getItem(STORAGE_KEYS.requests)  || "[]");
+let feedbacks = JSON.parse(localStorage.getItem(STORAGE_KEYS.feedbacks) || "[]");
+let ratings   = JSON.parse(localStorage.getItem(STORAGE_KEYS.ratings)   || "{}");
+let adminActive = sessionStorage.getItem("admin") === "on";
+
+function getAvgRating(id, manual) {
+  if (typeof manual === "number" && manual > 0) return manual;
+  if (!ratings[id] || ratings[id].length === 0) return 0;
+  const sum = ratings[id].reduce((a, b) => a + b, 0);
+  return Math.round((sum / ratings[id].length) * 10) / 10;
+}
+
+const sections = [
+  {id:"handmade", name:"الأشغال اليدوية", emoji:"🛠️", sub:[
+    {id:"carpenter", label:"نجار/نجارة", emojiM:"👨‍🔧", emojiF:"👩‍🔧"},
+    {id:"plumber", label:"سباك/سباكة", emojiM:"👨‍🔧", emojiF:"👩‍🔧"},
+    {id:"electrician", label:"كهربائي/كهربائية", emojiM:"👨‍🔧", emojiF:"👩‍🔧"},
+    {id:"blacksmith", label:"حداد/حدادة", emojiM:"👨‍🏭", emojiF:"👩‍🏭"}
+  ]},
+  {id:"equipment", name:"المعدات والآليات", emoji:"🚜", sub:[
+    {id:"shovel", label:"شيول", emojiM:"👷‍♂️", emojiF:"👷‍♀️"},
+    {id:"excavator", label:"حفار", emojiM:"👷‍♂️", emojiF:"👷‍♀️"},
+    {id:"crane", label:"رافعة", emojiM:"👷‍♂️", emojiF:"👷‍♀️"},
+    {id:"compactor", label:"ضاغطة", emojiM:"👷‍♂️", emojiF:"👷‍♀️"}
+  ]},
+  {id:"home", name:"الصيانة المنزلية", emoji:"🏡", sub:[
+    {id:"ac", label:"مكيّفات", emojiM:"🧑‍🔧", emojiF:"🧑‍🔧"},
+    {id:"pest", label:"مكافحة حشرات", emojiM:"🧑‍🔧", emojiF:"🧑‍🔧"},
+    {id:"clean", label:"تنظيف", emojiM:"🧑‍🦰", emojiF:"🧑‍🦰"}
+  ]},
+  {id:"creative", name:"الإبداعية والفنية", emoji:"🎨", sub:[
+    {id:"decor", label:"ديكور", emojiM:"👨‍🎨", emojiF:"👩‍🎨"},
+    {id:"painting", label:"نقاشة", emojiM:"👨‍🎨", emojiF:"👩‍🎨"},
+    {id:"design", label:"تصميم داخلي", emojiM:"👨‍🎨", emojiF:"👩‍🎨"}
+  ]},
+  {id:"tech", name:"التقنية والاستشارات", emoji:"💻", sub:[
+    {id:"programmer", label:"مبرمج/مبرمجة", emojiM:"👨‍💻", emojiF:"👩‍💻"},
+    {id:"consult", label:"استشاري/استشارية", emojiM:"👨‍💼", emojiF:"👩‍💼"},
+    {id:"designer", label:"مصمم/مصممة", emojiM:"👨‍💻", emojiF:"👩‍💻"}
+  ]},
+  {id:"driving", name:"سياقة ونقل", emoji:"🚗", sub:[
+    {id:"driver", label:"سائق/سائقة", emojiM:"👨‍✈️", emojiF:"👩‍✈️"},
+    {id:"truck", label:"سائق شاحنة", emojiM:"👨‍✈️", emojiF:"👩‍✈️"}
+  ]},
+  {id:"agri", name:"الخدمات الزراعية", emoji:"🌾", sub:[
+    {id:"farmer", label:"عامل زراعة/مهندس", emojiM:"👨‍🌾", emojiF:"👩‍🌾"},
+    {id:"worker", label:"خدمات زراعية عامة", emojiM:"👨‍🌾", emojiF:"👩‍🌾"}
+  ]},
+  {id:"hospitality", name:"الضيافة والمناسبات", emoji:"🍽️", sub:[
+    {id:"cook", label:"طبّاخ/طبّاخة", emojiM:"👨‍🍳", emojiF:"👩‍🍳"},
+    {id:"coffee", label:"صباب قهوة", emojiM:"👨‍🍳", emojiF:"👩‍🍳"}
+  ]},
+  {id:"office", name:"مكتبية وإدارية", emoji:"🏢", sub:[
+    {id:"secretary", label:"سكرتارية", emojiM:"👨‍💼", emojiF:"👩‍💼"},
+    {id:"account", label:"محاسبة", emojiM:"👨‍💼", emojiF:"👩‍💼"},
+    {id:"translate", label:"ترجمة", emojiM:"👨‍💼", emojiF:"👩‍💼"}
+  ]}
+];
+
+// --- Utility functions ---
+function b64e(str) { try { return btoa(unescape(encodeURIComponent(str))); } catch { return str; } }
+function b64d(str) { try { return decodeURIComponent(escape(atob(str))); } catch { return str || ""; } }
+function saveData() {
+  localStorage.setItem(STORAGE_KEYS.providers, JSON.stringify(providers));
+  localStorage.setItem(STORAGE_KEYS.requests, JSON.stringify(requests));
+  localStorage.setItem(STORAGE_KEYS.feedbacks, JSON.stringify(feedbacks));
+  localStorage.setItem(STORAGE_KEYS.ratings, JSON.stringify(ratings));
+}
+function toast(msg) {
+  const toastRoot = document.getElementById("toastRoot");
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  toastRoot.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
+}
+
+// --- Sidebar & Hamburger ---
+const sidebar = document.getElementById("sidebarNav");
+const hamburger = document.getElementById("hamburger");
+const overlay = document.getElementById("navOverlay");
+const main = document.getElementById("mainContent");
+
+function isMobileView() { return window.innerWidth <= 900; }
+function toggleSidebar(forceClose = false) {
+  if (!isMobileView()) return;
+  const isActive = sidebar.classList.contains("active");
+  if (forceClose || isActive) {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    hamburger.classList.remove("active");
+    hamburger.setAttribute("aria-expanded", "false");
+    overlay.setAttribute("aria-hidden", "true");
+  } else {
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+    hamburger.classList.add("active");
+    hamburger.setAttribute("aria-expanded", "true");
+    overlay.setAttribute("aria-hidden", "false");
+  }
+}
+hamburger.addEventListener("click", () => toggleSidebar());
+overlay.addEventListener("click", () => toggleSidebar(true));
+window.addEventListener("resize", () => {
+  if (!isMobileView()) {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+    hamburger.classList.remove("active");
+    hamburger.setAttribute("aria-expanded", "false");
+    overlay.setAttribute("aria-hidden", "true");
+  }
+});
+
+// --- Navigation ---
+function setActiveSidebarBtn(pageId) {
+  sidebar.querySelectorAll("button[data-page]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.page === pageId);
+  });
+}
+
+function navigate(page, subId = null) {
+  toggleSidebar(true);
+  window.scrollTo(0,0);
+
+  if (!page) page = "home";
+  if (page !== "admin" && !adminActive) sessionStorage.removeItem("admin");
+
+  switch(page) {
+    case "home": setActiveSidebarBtn("home"); renderSections(); break;
+    case "section": if(subId) { setActiveSidebarBtn(null); renderSectionProviders(subId); } break;
+    case "filter": setActiveSidebarBtn("filter"); renderFilter(); break;
+    case "register": setActiveSidebarBtn("register"); renderRegister(); break;
+    case "admin": if(adminActive) { setActiveSidebarBtn(null); renderAdmin(); } else { adminLogin(); } break;
+    default: setActiveSidebarBtn("home"); renderSections(); break;
+  }
+}
+
+function renderSections() {
+  main.innerHTML = `
+    <h2>🗂️ الأقسام الرئيسية للخدمات</h2>
+    <div class="card-grid" role="list">
+      ${sections.map(s => `
+        <div class="section-card" tabindex="0" role="listitem" aria-label="${s.name}"
+          onclick="navigate('section', '${s.id}')" onkeydown="if(event.key==='Enter')navigate('section', '${s.id}')">
+          <div class="section-emoji">${s.emoji}</div>
+          <div>${s.name}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+// Providers list in a section (only approved)
+function renderSectionProviders(sectionId) {
+  const section = sections.find(s => s.id === sectionId);
+  if (!section) {
+    main.innerHTML = `<p style="color:#a00; padding:20px;">القسم غير موجود!</p>`;
+    return;
+  }
+  // Filter only approved providers (not in requests)
+  const filteredProviders = providers.filter(p => p.section === sectionId);
+
+  main.innerHTML = `
+    <button class="show-modal-btn" style="float:left; margin-top:-6px;" onclick="navigate('home')">⬅️ عودة</button>
+    <h2>${section.emoji} ${section.name}</h2>
+    <div class="searchbar-wrap" style="margin-top:18px;">
+      <input id="searchBar" class="searchbar" type="search" placeholder="ابحث في هذا القسم..." aria-label="بحث في القسم" autofocus>
+      <button class="show-modal-btn" onclick="navigate('register')">+ طلب تسجيل مزوّد خدمة</button>
+    </div>
+    <div id="providerList"></div>
+  `;
+
+  const searchBar = document.getElementById("searchBar");
+  searchBar.addEventListener("input", () => {
+    const query = searchBar.value.trim().toLowerCase();
+    const filtered = filteredProviders.filter(p => {
+      const sec = sections.find(s => s.id === p.section) || {};
+      return p.name.toLowerCase().includes(query)
+        || (sec.name || "").toLowerCase().includes(query)
+        || (p.bio || "").toLowerCase().includes(query);
+    });
+    renderProviders("providerList", filtered);
+  });
+
+  renderProviders("providerList", filteredProviders);
+}
+
+function renderProviders(containerId, list) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = "";
+  if (list.length === 0) {
+    container.innerHTML = `<p style="color:#999; padding: 15px 10px;">لا يوجد مزوّدو خدمة حالياً.</p>`;
+    return;
+  }
+
+  list.forEach(p => {
+    const sec = sections.find(s => s.id === p.section) || {};
+    const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+    const emoji = p.gender === "F" ? (sub.emojiF || sec.emoji) : (sub.emojiM || sec.emoji);
+    const avgRating = getAvgRating(p.id, p.rating);
+container.insertAdjacentHTML("beforeend", `
+  <article class="provider-card" tabindex="0" aria-label="مزود خدمة: ${p.name}">
+    <div class="provider-emoji">${emoji}</div>
+    <div class="provider-info">
+      <div style="font-size:1.08em; font-weight:700;">${p.name}</div>
+      <div class="row"><span class="label">الجنسية:</span><span class="value">${p.nationality}</span></div>
+      <div class="row"><span class="label">القسم:</span><span class="value">${sec.name || "-"}</span></div>
+      <div class="row"><span class="label">التخصص:</span><span class="value">${sub.label || "-"}</span></div>
+      <div class="row"><span class="label">المنطقة:</span><span class="value">${p.location}</span></div>
+      <div class="row"><span class="label">الخبرة:</span><span class="value">${(p.bio||"-")}</span></div>
+      <div class="row"><span class="label">التوفر:</span><span class="value">${(p.availability||[]).join("، ") || "-"}</span></div>
+      <div class="row"><span class="stars" title="متوسط التقييم">${renderStars(avgRating)}</span></div>
+      <div class="card-actions" role="group" aria-label="إجراءات المزود">
+        <button class="call" aria-label="اتصال ${p.name}" type="button" onclick="window.location.href='tel:${b64d(p.phone)}'">📞 اتصال</button>
+        <button class="whatsapp" aria-label="واتساب ${p.name}" type="button"
+          onclick="openWhatsApp('${b64d(p.phone)}','${p.name}','${sub.label || "-"}','${(p.availability||[]).join("، ") || "-"}')">
+          💬 واتساب
+        </button>
+            <button class="share" aria-label="مشاركة بطاقة ${p.name}" type="button" onclick="shareProvider('${p.id}')">مشاركة البطاقة</button>
+          </div>
+        </div>
+      </article>
+    `);
+  });
+}
+
+function renderStars(val) {
+  const rounded = Math.round(val);
+  let starsHTML = "";
+  for (let i = 1; i <= 5; i++) {
+    starsHTML += i <= rounded ? "★" : "☆";
+  }
+  return starsHTML;
+}
+
+// --- Filter Page ---
+function renderFilter() {
+  main.innerHTML = `
+    <h2>🔍 بحث وفلترة في جميع الأقسام</h2>
+<div class="filter-row">
+  <select id="filterSection" aria-label="اختيار القسم">
+    <option value="">كل الأقسام</option>
+    ${sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('')}
+  </select>
+  <select id="filterGender" aria-label="اختيار الجنس">
+    <option value="">الجميع</option>
+    <option value="M">ذكر</option>
+    <option value="F">أنثى</option>
+  </select>
+  <select id="filterLocation" aria-label="اختيار المنطقة">
+    <option value="">كل المناطق</option>
+    ${
+      // جمع المناطق الفريدة من بيانات المزودين
+      [...new Set(providers.map(p => p.location).filter(Boolean))]
+      .sort((a,b)=>a.localeCompare(b,'ar'))
+      .map(loc => `<option value="${loc}">${loc}</option>`).join('')
+    }
+  </select>
+  <select id="filterRating" aria-label="اختيار التقييم">
+    <option value="0">كل التقييمات</option>
+    <option value="2">2 نجمة+</option>
+    <option value="3">3 نجوم+</option>
+    <option value="4">4 نجوم+</option>
+  </select>
+</div>
+    <button class="submit-btn" id="applyFiltersBtn" type="button">تطبيق الفلاتر</button>
+    <div id="filteredList" style="margin-top: 18px;"></div>
+  `;
+  document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
+  applyFilters();
+}
+function applyFilters() {
+  const s = document.getElementById("filterSection").value;
+  const g = document.getElementById("filterGender").value;
+  const l = document.getElementById("filterLocation").value; // ⭐
+  const r = parseFloat(document.getElementById("filterRating").value);
+  // Apply filters only on approved providers
+  const filtered = providers.filter(p =>
+    (!s || p.section === s) &&
+    (!g || p.gender === g) &&
+    (!l || p.location === l) &&   // ⭐ أضف هذا السطر
+    (isNaN(r) || getAvgRating(p.id, p.rating) >= r)
+  );
+  renderProviders("filteredList", filtered);
+}
+
+// --- Render Register Form ---
+function renderRegister() {
+  main.innerHTML = `
+    <h2>✍️ طلب تسجيل مزوّد خدمة جديد</h2>
+    <form id="registerForm" autocomplete="off" aria-label="نموذج طلب تسجيل مزود خدمة جديد">
+      <label class="tooltip" for="name">الاسم الكامل *</label>
+      <input id="name" name="name" type="text" required />
+      <label class="tooltip" for="nationality">الجنسية *</label>
+      <input id="nationality" name="nationality" type="text" required />
+      <label class="tooltip" for="gender">الجنس *</label>
+      <select id="gender" name="gender" required>
+        <option value="">اختر</option>
+        <option value="M">ذكر</option>
+        <option value="F">أنثى</option>
+      </select>
+      <label class="tooltip" for="section">القسم الرئيسي *</label>
+      <select id="section" name="section" required></select>
+      <label class="tooltip" for="sub">التخصص الفرعي *</label>
+      <select id="sub" name="sub" required disabled></select>
+      <label class="tooltip" for="location">المنطقة/الولاية *</label>
+      <input id="location" name="location" type="text" required />
+      <label class="tooltip" for="phone">رقم الهاتف (واتساب) *</label>
+      <input id="phone" name="phone" type="tel" required />
+      <label class="tooltip" for="civilid">رقم الهوية/الرقم المدني *</label>
+      <input id="civilid" name="civilid" type="text" required />
+      <label class="tooltip" for="availability">أوقات التوفر (اختياري):</label>
+      <select id="availability" name="availability" multiple style="height:95px;">
+        <option value="صباحاً كل يوم">صباحاً كل يوم</option>
+        <option value="مساءً كل يوم">مساءً كل يوم</option>
+        <option value="كل الأيام">كل الأيام</option>
+        <option value="الجمعة">الجمعة</option>
+        <option value="صباح الجمعة">صباح الجمعة</option>
+        <option value="مساء الجمعة">مساء الجمعة</option>
+        <option value="الأحد">الأحد</option>
+        <option value="الاثنين">الاثنين</option>
+        <option value="الثلاثاء">الثلاثاء</option>
+        <option value="الأربعاء">الأربعاء</option>
+        <option value="الخميس">الخميس</option>
+        <option value="الجمعة">الجمعة</option>
+        <option value="السبت">السبت</option>
+      </select>
+      <label class="tooltip" for="bio">الخبرة أو نبذة (اختياري)</label>
+      <textarea id="bio" name="bio" rows="3"></textarea>
+      <button class="submit-btn" type="submit">إرسال الطلب</button>
+    </form>
+  `;
+  // Populate القسم
+  const sectionSelect = document.getElementById("section");
+  const subSelect = document.getElementById("sub");
+  sectionSelect.innerHTML = `<option value="">اختر القسم</option>` +
+    sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  subSelect.innerHTML = `<option value="">اختر القسم أولاً</option>`;
+  subSelect.disabled = true;
+  sectionSelect.addEventListener("change", () => {
+    const selected = sections.find(s => s.id === sectionSelect.value);
+    if (selected) {
+      subSelect.innerHTML = selected.sub.map(ss => `<option value="${ss.id}">${ss.label}</option>`).join("");
+      subSelect.disabled = false;
+    } else {
+      subSelect.innerHTML = `<option value="">اختر القسم أولاً</option>`;
+      subSelect.disabled = true;
+    }
+  });
+  // Handle submit
+  document.getElementById("registerForm").addEventListener("submit", e => {
+    e.preventDefault();
+    submitRequest();
+  });
+}
+
+// --- Submit Registration ---
+function submitRequest() {
+  const name = document.getElementById("name").value.trim();
+  const nationality = document.getElementById("nationality").value.trim();
+  const gender = document.getElementById("gender").value;
+  const section = document.getElementById("section").value;
+  const sub = document.getElementById("sub").value;
+  const location = document.getElementById("location").value.trim();
+  const phoneRaw = document.getElementById("phone").value.trim();
+  const civilidRaw = document.getElementById("civilid").value.trim();
+  const bio = document.getElementById("bio").value.trim();
+  const availability = Array.from(document.getElementById("availability").selectedOptions).map(o=>o.value);
+
+  if (!name || !nationality || !gender || !section || !sub || !location || !phoneRaw || !civilidRaw) {
+    toast("يرجى ملء جميع الحقول المطلوبة بشكل صحيح.");
+    return;
+  }
+  const existsInProviders = providers.some(p => b64d(p.civilid) === civilidRaw);
+  const existsInRequests = requests.some(r => b64d(r.civilid) === civilidRaw);
+  if (existsInProviders || existsInRequests) {
+    toast("رقم الهوية/الرقم المدني مسجل بالفعل.");
+    return;
+  }
+  const phone = b64e(phoneRaw);
+  const civilid = b64e(civilidRaw);
+  const newRequest = {
+    id: Date.now() + Math.random().toString(36).slice(2,8),
+    name, nationality, gender, section, sub, location, phone, civilid, availability, bio,
+    rating: 0,
+    created: new Date().toISOString(),
+    updated: new Date().toISOString()
+  };
+  requests.push(newRequest);
+  saveData();
+  toast("تم إرسال طلب تسجيل مزوّد الخدمة بنجاح! بانتظار الموافقة.");
+  navigate("home");
+}
+
+// --- Admin Section ---
+
+function adminLogin() {
+  if(document.querySelector(".admin-modal-bg")) return; // prevent multiple
+  const modal = document.createElement("div");
+  modal.className = "admin-modal-bg";
+  modal.setAttribute("role","dialog");
+  modal.setAttribute("aria-modal","true");
+  modal.innerHTML = `
+    <div class="admin-modal">
+      <div style="font-weight:700; font-size:1.1rem; margin-bottom: 14px;">رمز الدخول الإداري</div>
+      <div class="admin-error" id="adminErr" aria-live="assertive"></div>
+      <div class="pass-input-row">
+        <input id="adminPassInput" type="password" maxlength="20" autocomplete="off" autofocus placeholder="أدخل الرمز" aria-label="رمز الدخول الإداري" />
+        <button class="showhide" aria-label="إظهار/إخفاء كلمة المرور" type="button">👁️</button>
+      </div>
+      <button class="submit-btn" id="adminLoginBtn" type="button">دخول</button>
+      <button class="submit-btn" style="background: var(--danger);" type="button" id="adminCancelBtn">إلغاء</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  modal.querySelector(".showhide").addEventListener("click", () => {
+    const passInput = modal.querySelector("#adminPassInput");
+    if(passInput.type === "password") {
+      passInput.type = "text";
+      modal.querySelector(".showhide").textContent = "🚫";
+    } else {
+      passInput.type = "password";
+      modal.querySelector(".showhide").textContent = "👁️";
+    }
+    passInput.focus();
+  });
+
+  modal.querySelector("#adminLoginBtn").addEventListener("click", tryAdminLogin);
+  modal.querySelector("#adminCancelBtn").addEventListener("click", closeAdminModal);
+  modal.querySelector("#adminPassInput").addEventListener("keydown", e => {
+    if(e.key === "Enter") tryAdminLogin();
+  });
+
+  function tryAdminLogin() {
+    const val = modal.querySelector("#adminPassInput").value;
+    const errDiv = modal.querySelector("#adminErr");
+    if(val === ADMIN_PASS) {
+      adminActive = true;
+      sessionStorage.setItem("admin", "on");
+      closeAdminModal();
+      navigate("admin");
+    } else {
+      errDiv.textContent = "رمز غير صحيح!";
+      modal.querySelector("#adminPassInput").value = "";
+      modal.querySelector("#adminPassInput").focus();
+    }
+  }
+}
+function closeAdminModal() {
+  const modal = document.querySelector(".admin-modal-bg");
+  if(modal) modal.remove();
+}
+
+function renderAdmin() {
+  if(!adminActive) {
+    main.innerHTML = `<p style="color:#a00; padding:20px;">ليس لديك صلاحيات للوصول إلى لوحة الإدارة.</p>`;
+    return;
+  }
+  main.innerHTML = `
+    <h2>⚙️ لوحة الإدارة</h2>
+    <div class="stats-cards">
+      <div class="stat-card">إجمالي المزودين <span id="statProviders"></span></div>
+      <div class="stat-card">طلبات الانتظار <span id="statRequests"></span></div>
+      <div class="stat-card">متوسط التقييم <span id="statAvgRating"></span></div>
+      <div class="stat-card">أشهر جنسية <span id="statTopNat"></span></div>
+    </div>
+
+    <div class="admin-section-card" aria-label="طلبات التسجيل الجديدة">
+      <h3>📋 قائمة انتظار طلبات التسجيل (${requests.length})</h3>
+      <div id="requestsList"></div>
+    </div>
+
+    <div class="admin-section-card" aria-label="مزودو الخدمة المعتمدون">
+      <h3>✅ مزودو الخدمة المعتمدون (${providers.length})</h3>
+      <input type="text" id="adminSearch" placeholder="ابحث بالاسم أو التخصص أو الجنسية" aria-label="بحث في قائمة المزودين" style="width:100%; padding:10px; border-radius:8px; border:1.5px solid #bbb; font-size:1rem; margin: 15px 0;" />
+      <section id="adminList" aria-live="polite" aria-atomic="true"></section>
+      <div style="margin-top:18px;">
+        <button class="dl-btn" type="button" id="downloadDataBtn">تحميل كل البيانات (CSV)</button>
+        <button class="dl-btn" type="button" id="downloadPdfBtn">تحميل كل البيانات (PDF)</button>
+      </div>
+    </div>
+
+    <div class="admin-section-card" aria-label="توزيع المزودين حسب الأقسام">
+      <h3>📊 إحصائيات وتوزيع المزودين</h3>
+      <div class="charts-wrap">
+        <div class="chart-card" role="img" aria-label="رسم بياني دائري لتوزيع المزودين حسب القسم">
+          <div class="chart-title">توزيع حسب القسم</div>
+          <canvas id="pieSection" class="canvas-chart" width="200" height="140"></canvas>
+        </div>
+        <div class="chart-card" role="img" aria-label="رسم بياني أعمدة حسب الجنسية">
+          <div class="chart-title">حسب الجنسية</div>
+          <canvas id="barNationality" class="canvas-chart" width="220" height="160"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-section-card" aria-label="الشكاوى والملاحظات">
+      <h3>💡 الشكاوى والملاحظات</h3>
+      <button class="add-feedback-btn" type="button" id="addFeedbackAdminBtn">+ إضافة شكوى/اقتراح</button>
+      <section id="feedbackList" aria-live="polite" aria-atomic="true" style="margin-top:12px;"></section>
+    </div>
+  `;
+  updateStatsCards();
+  document.getElementById("adminSearch").addEventListener("input", renderAdminLists);
+  document.getElementById("downloadDataBtn").addEventListener("click", downloadAllData);
+  document.getElementById("downloadPdfBtn").addEventListener("click", downloadAllDataPdf);
+  document.getElementById("addFeedbackAdminBtn").addEventListener("click", showFeedbackModal);
+
+  renderRequests();
+  renderAdminLists();
+  renderFeedbacks();
+  setTimeout(drawCharts, 120);
+}
+
+// Render pending requests list
+function renderRequests() {
+  const container = document.getElementById("requestsList");
+  if (!container) return;
+  if (requests.length === 0) {
+    container.innerHTML = `<p style="padding:12px; color:#666;">لا توجد طلبات تسجيل جديدة.</p>`;
+    return;
+  }
+  container.innerHTML = "";
+
+  // --- التعديل يبدأ هنا ---
+  const sortedRequests = [...requests].sort(
+    (a, b) => new Date(b.updated || b.created) - new Date(a.updated || a.created)
+  );
+  sortedRequests.forEach((r, i) => {
+    const sec = sections.find(s => s.id === r.section) || {};
+    const sub = (sec.sub || []).find(x => x.id === r.sub) || {};
+    container.insertAdjacentHTML("beforeend", `
+      <article class="provider-card" tabindex="0" aria-label="طلب تسجيل مزود خدمة: ${r.name}">
+        <div class="provider-emoji">${r.gender === "F" ? (sub.emojiF || sec.emoji) : (sub.emojiM || sec.emoji)}</div>
+        <div class="provider-info">
+          <div style="font-size:1.06em; font-weight:700;">${r.name}</div>
+          <div class="row"><span class="label">الجنسية:</span><span class="value">${r.nationality}</span></div>
+          <div class="row"><span class="label">القسم:</span><span class="value">${sec.name || "-"}</span></div>
+          <div class="row"><span class="label">التخصص:</span><span class="value">${sub.label || "-"}</span></div>
+          <div class="row"><span class="label">المنطقة:</span><span class="value">${r.location}</span></div>
+          <div class="card-actions" role="group" aria-label="إجراءات الطلب">
+            <button class="rate" type="button" aria-label="قبول الطلب" onclick="approveRequest(${i})">✔️ قبول</button>
+            <button class="delete" type="button" aria-label="رفض الطلب" onclick="rejectRequest(${i})">✖ رفض</button>
+          </div>
+        </div>
+      </article>
+    `);
+  });
+}
+
+// Approve a request, moves to providers list
+function approveRequest(idx) {
+  if(!confirm("هل أنت متأكد من قبول هذا الطلب؟")) return;
+  const r = requests.splice(idx,1)[0];
+  providers.push(r);
+  saveData();
+  toast("تم قبول طلب التسجيل وإضافته إلى المزودين");
+  renderRequests();
+  renderAdminLists();
+  drawCharts();
+}
+
+// Reject a request (delete)
+function rejectRequest(idx) {
+  if(!confirm("هل تريد رفض وحذف طلب التسجيل؟")) return;
+  requests.splice(idx,1);
+  saveData();
+  toast("تم رفض وحذف طلب التسجيل");
+  renderRequests();
+}
+
+// Render admin provider list filtered by search
+function renderAdminLists() {
+  const container = document.getElementById("adminList");
+  if (!container) return;
+  const query = (document.getElementById("adminSearch")?.value || "").trim().toLowerCase();
+  const filtered = providers.filter(p => {
+    const secName = (sections.find(s => s.id === p.section) || {}).name || "";
+    return p.name.toLowerCase().includes(query) || 
+           p.nationality.toLowerCase().includes(query) ||
+           secName.toLowerCase().includes(query) ||
+           (p.bio || "").toLowerCase().includes(query) ||
+           (b64d(p.civilid) || "").includes(query); // البحث برقم الهوية
+  });
+
+  if(filtered.length === 0) {
+    container.innerHTML = `<p style="padding:12px; color:#666;">لا توجد نتائج مطابقة للبحث.</p>`;
+    return;
+  }
+  container.innerHTML = "";
+
+  // --- التعديل يبدأ هنا ---
+  const sortedProviders = [...filtered].sort(
+    (a, b) => new Date(b.updated || b.created) - new Date(a.updated || a.created)
+  );
+  sortedProviders.forEach((p,i) => {
+    const sec = sections.find(s => s.id === p.section) || {};
+    const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+    const emoji = p.gender === "F" ? (sub.emojiF || sec.emoji) : (sub.emojiM || sec.emoji);
+    container.insertAdjacentHTML("beforeend", `
+      <article class="provider-card" tabindex="0" aria-label="مزود خدمة: ${p.name}">
+        <div class="provider-emoji">${emoji}</div>
+        <div class="provider-info">
+          <div style="font-size:1.06em;font-weight:700;">${p.name}</div>
+          <div class="row"><span class="label">الجنسية:</span><span class="value">${p.nationality}</span></div>
+          <div class="row"><span class="label">القسم:</span><span class="value">${sec.name || "-"}</span></div>
+          <div class="row"><span class="label">التخصص:</span><span class="value">${sub.label || "-"}</span></div>
+          <div class="row"><span class="label">المنطقة:</span><span class="value">${p.location}</span></div>
+          <div class="row"><span class="label">الخبرة:</span><span class="value">${(p.bio||"-")}</span></div>
+          <div class="row" style="font-size:0.82em;color:#999;">
+            أضيف في: ${(p.created || "---").split("T")[0]} | عدّل في: ${(p.updated || "---").split("T")[0]}
+          </div>
+          <div class="card-actions" role="group" aria-label="إجراءات المزود">
+            <button class="edit" type="button" aria-label="تعديل ${p.name}" onclick="openEditModal(${i})">✏️ تعديل</button>
+            <button class="rate" type="button" aria-label="تقييم ${p.name}" onclick="openRatingModal('${p.id}')">⭐ تقييم</button>
+            <button class="delete" type="button" aria-label="حذف ${p.name}" onclick="deleteProvider(${i})">🗑️ حذف</button>
+          </div>
+        </div>
+      </article>
+    `);
+  });
+  // --- التعديل ينتهي هنا ---
+}
+
+// Delete a provider
+function deleteProvider(idx) {
+  if(!confirm("هل أنت متأكد من حذف هذا المزود؟ لا يمكن التراجع.")) return;
+  providers.splice(idx,1);
+  saveData();
+  toast("تم حذف المزود بنجاح.");
+  renderAdminLists();
+  drawCharts();
+}
+
+// Open modal to edit provider details
+function openEditModal(idx) {
+  const p = providers[idx];
+  if(!p) return;
+  openModal({
+    title: "تعديل بيانات المزود",
+    content: `
+      <form id="editForm" aria-label="نموذج تعديل بيانات المزود">
+        <label for="editName">الاسم الكامل *</label>
+        <input id="editName" name="editName" type="text" required value="${p.name}" />
+        <label for="editNationality">الجنسية *</label>
+        <input id="editNationality" name="editNationality" type="text" required value="${p.nationality}" />
+        <label for="editGender">الجنس *</label>
+        <select id="editGender" name="editGender" required>
+          <option value="M" ${p.gender==="M"?"selected":""}>ذكر</option>
+          <option value="F" ${p.gender==="F"?"selected":""}>أنثى</option>
+        </select>
+        <label for="editSection">القسم الرئيسي *</label>
+        <select id="editSection" name="editSection" required></select>
+        <label for="editSub">التخصص الفرعي *</label>
+        <select id="editSub" name="editSub" required disabled></select>
+        <label for="editLocation">المنطقة *</label>
+        <input id="editLocation" name="editLocation" type="text" required value="${p.location}" />
+        <label for="editPhone">رقم الهاتف (واتساب) *</label>
+        <input id="editPhone" name="editPhone" type="tel" required value="${b64d(p.phone)}" />
+        <label for="editCivilid">رقم الهوية/الرقم المدني *</label>
+        <input id="editCivilid" name="editCivilid" type="text" required value="${b64d(p.civilid)||""}" />
+        <label for="editAvailability">أوقات التوفر:</label>
+        <select id="editAvailability" name="editAvailability" multiple style="height:95px;">
+          <option value="صباحاً كل يوم">صباحاً كل يوم</option>
+          <option value="مساءً كل يوم">مساءً كل يوم</option>
+          <option value="كل الأيام">كل الأيام</option>
+          <option value="الجمعة">الجمعة</option>
+          <option value="صباح الجمعة">صباح الجمعة</option>
+          <option value="مساء الجمعة">مساء الجمعة</option>
+          <option value="الأحد">الأحد</option>
+          <option value="الاثنين">الاثنين</option>
+          <option value="الثلاثاء">الثلاثاء</option>
+          <option value="الأربعاء">الأربعاء</option>
+          <option value="الخميس">الخميس</option>
+          <option value="الجمعة">الجمعة</option>
+          <option value="السبت">السبت</option>
+        </select>
+        <label for="editBio">الخبرة أو نبذة عن الخدمة</label>
+        <textarea id="editBio" name="editBio" rows="3">${p.bio || ""}</textarea>
+        <button class="submit-btn" type="submit">حفظ التعديلات</button>
+      </form>
+    `,
+    onShow(modalEl) {
+      // Fill sections
+      const secSelect = modalEl.querySelector("#editSection");
+      const subSelect = modalEl.querySelector("#editSub");
+      secSelect.innerHTML = `<option value="">اختر القسم</option>` + sections.map(s => `<option value="${s.id}">${s.name}</option>`).join("");
+      secSelect.value = p.section;
+      updateEditSubOptions();
+      secSelect.addEventListener("change", updateEditSubOptions);
+      function updateEditSubOptions() {
+        const selectedSec = sections.find(s => s.id === secSelect.value);
+        if(selectedSec) {
+          subSelect.innerHTML = selectedSec.sub.map(ss => `<option value="${ss.id}">${ss.label}</option>`).join("");
+          subSelect.disabled = false;
+          subSelect.value = p.sub;
+        } else {
+          subSelect.innerHTML = "<option value=''>اختر القسم أولاً</option>";
+          subSelect.disabled = true;
+        }
+      }
+      // حدد أوقات التوفر المختارة سابقًا
+      const avSel = modalEl.querySelector("#editAvailability");
+      if(Array.isArray(p.availability)) {
+        [...avSel.options].forEach(opt => { if(p.availability.includes(opt.value)) opt.selected = true; });
+      }
+      // Handle form submission
+      modalEl.querySelector("#editForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const name = modalEl.querySelector("#editName").value.trim();
+        const nationality = modalEl.querySelector("#editNationality").value.trim();
+        const gender = modalEl.querySelector("#editGender").value;
+        const section = modalEl.querySelector("#editSection").value;
+        const sub = modalEl.querySelector("#editSub").value;
+        const location = modalEl.querySelector("#editLocation").value.trim();
+        const phone = modalEl.querySelector("#editPhone").value.trim();
+        const civilid = modalEl.querySelector("#editCivilid").value.trim();
+        const availability = Array.from(modalEl.querySelector("#editAvailability").selectedOptions).map(o=>o.value);
+        const bio = modalEl.querySelector("#editBio").value.trim();
+        if(!name || !nationality || !gender || !section || !sub || !location || !phone || !civilid) {
+          alert("يرجى ملء جميع الحقول المطلوبة.");
+          return;
+        }
+        p.name = name;
+        p.nationality = nationality;
+        p.gender = gender;
+        p.section = section;
+        p.sub = sub;
+        p.location = location;
+        p.phone = b64e(phone);
+        p.civilid = b64e(civilid);
+        p.availability = availability;
+        p.bio = bio;
+        p.updated = new Date().toISOString();
+        saveData();
+        toast("تم حفظ التعديلات.");
+        closeModal();
+        renderAdminLists();
+        drawCharts();
+      });
+    }
+  });
+}
+
+// --- تصدير CSV ---
+function downloadAllData() {
+  const csvHeaders = [
+    "الاسم", "الجنسية", "الجنس", "القسم", "التخصص", "المنطقة", "رقم الهاتف", "الرقم المدني", "الخبرة", "التوفر", "التقييم"
+  ];
+  const rows = [csvHeaders.join(",")];
+  for(const p of providers) {
+    const sec = sections.find(s => s.id === p.section) || {};
+    const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+    rows.push([
+      p.name,
+      p.nationality,
+      p.gender === "M" ? "ذكر" : "أنثى",
+      sec.name || "-",
+      sub.label || "-",
+      p.location,
+      b64d(p.phone),
+      b64d(p.civilid),
+      (p.bio||"-").replace(/,/g, "،"),
+      (p.availability||[]).join(";"),
+      getAvgRating(p.id, p.rating)
+    ].map(x => `"${x}"`).join(","));
+  }
+  const blob = new Blob([rows.join("\n")], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "foran_providers_data.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("تم تحميل ملف البيانات.");
+}
+
+function openRatingModal(providerId) {
+  openModal({
+    title: "تقييم المزود",
+    content: `
+      <div>اختر تقييمك للمزود (1-5 نجوم):</div>
+      <div style="margin-top: 14px; font-size: 2rem; text-align: center;">
+        <button type="button" class="rate-star" data-val="1" aria-label="نجمة واحدة">☆</button>
+        <button type="button" class="rate-star" data-val="2" aria-label="نجمتان">☆</button>
+        <button type="button" class="rate-star" data-val="3" aria-label="ثلاث نجوم">☆</button>
+        <button type="button" class="rate-star" data-val="4" aria-label="أربع نجوم">☆</button>
+        <button type="button" class="rate-star" data-val="5" aria-label="خمس نجوم">☆</button>
+      </div>
+    `,
+    onShow(modalEl) {
+      const stars = [...modalEl.querySelectorAll(".rate-star")];
+      let selectedRating = 0;
+
+      function highlightStars(n) {
+        stars.forEach((star,i) => star.textContent = i < n ? "★" : "☆");
+      }
+
+      stars.forEach(star => {
+        star.addEventListener("mouseenter", () => highlightStars(parseInt(star.dataset.val)));
+        star.addEventListener("mouseleave", () => highlightStars(selectedRating));
+        star.addEventListener("click", () => {
+          selectedRating = parseInt(star.dataset.val);
+          highlightStars(selectedRating);
+          submitRating(providerId, selectedRating);
+          closeModal();
+        });
+      });
+    }
+  });
+}
+
+function submitRating(providerId, value) {
+  if(!ratings[providerId]) ratings[providerId] = [];
+  ratings[providerId].push(value);
+  saveData();
+  toast("شكرًا على تقييمك!");
+  renderAdminLists();
+  drawCharts();
+}
+
+// --- Sharing ---
+function shareProvider(providerId) {
+  const p = providers.find(x => x.id === providerId);
+  if(!p) return toast("المزود غير موجود");
+  const sec = sections.find(s => s.id === p.section) || {};
+  const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+  const phone = b64d(p.phone);
+  const siteUrl = "https://foran.om"; // ← ضع هنا رابط موقعك الفعلي
+
+  // الرسالة الإعلانية مع الرابط
+  const msg = `تعرف على مزود خدمة موثوق عبر منصة فوراً:
+🔹*الاسم:* ${p.name}
+🔹*القسم:* ${sec.name}
+🔹*التخصص:* ${sub.label}
+🔹*المنطقة:* ${p.location}
+🔹*رقم التواصل:* ${phone}
+🔹 *الخبرة:* ${(p.bio || "-")}
+⭐ للمزيد من الخدمات :
+${siteUrl}`;
+
+  if(navigator.share) {
+    navigator.share({
+      title: "معلومات مزود خدمة من فوراً",
+      text: msg
+    }).catch(() => toast("مشاركة لم تتم"));
+  } else {
+    // للنسخ اليدوي عبر prompt
+    prompt("انسخ بيانات المزود للمشاركة:", msg);
+  }
+}
+
+// --- Feedbacks ---
+function renderFeedbacks() {
+  const container = document.getElementById("feedbackList");
+  if(!container) return;
+  if(feedbacks.length === 0) {
+    container.innerHTML = `<p style="padding:10px; color:#666;">لا توجد شكاوى أو اقتراحات حالياً.</p>`;
+    return;
+  }
+  container.innerHTML = feedbacks.map((f,i) => `
+    <article style="background:#f0f9f9; border-radius:10px; padding:12px 14px; margin-bottom:12px;">
+      <div><strong>${f.name || "مجهول"}</strong> - <em>${(f.created || "").split("T")[0]}</em></div>
+      <div style="margin-top:8px;">${escapeHtml(f.text)}</div>
+      ${adminActive ? `<button class="delete-feedback-btn" type="button" onclick="deleteFeedback(${i})" aria-label="حذف الشكوى أو الاقتراح">حذف</button>` : ""}
+    </article>
+  `).join("");
+}
+function escapeHtml(text) {
+  return text.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function deleteFeedback(idx) {
+  if(!confirm("هل تريد حذف هذه الشكوى أو الاقتراح؟")) return;
+  feedbacks.splice(idx,1);
+  saveData();
+  toast("تم حذف الشكوى/الاقتراح.");
+  renderFeedbacks();
+}
+function showFeedbackModal() {
+  openModal({
+    title: "إضافة شكوى أو اقتراح",
+    content: `
+      <form id="feedbackForm" aria-label="نموذج إضافة شكوى أو اقتراح">
+        <label for="feedbackName">اسمك (اختياري)</label>
+        <input id="feedbackName" name="feedbackName" type="text" placeholder="مثال: محمد" />
+        <label for="feedbackText">نص الشكوى أو الاقتراح *</label>
+        <textarea id="feedbackText" name="feedbackText" rows="4" required aria-required="true" placeholder="اكتب هنا..."></textarea>
+        <button class="submit-btn" type="submit">إرسال</button>
+      </form>
+    `,
+    onShow(modalEl) {
+      modalEl.querySelector("#feedbackForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const name = modalEl.querySelector("#feedbackName").value.trim();
+        const text = modalEl.querySelector("#feedbackText").value.trim();
+        if(!text) {
+          alert("يرجى كتابة نص الشكوى أو الاقتراح.");
+          return;
+        }
+        feedbacks.push({name, text, created: new Date().toISOString()});
+        saveData();
+        toast("تم إرسال الشكوى/الاقتراح، شكراً لك.");
+        closeModal();
+        renderFeedbacks();
+      });
+    }
+  });
+}
+
+// --- إحصائيات سريعة كروت الإدارة ---
+function updateStatsCards() {
+  document.getElementById("statProviders").textContent = providers.length;
+  document.getElementById("statRequests").textContent = requests.length;
+  // متوسط التقييم
+  const ratingsArr = Object.values(ratings).flat();
+  const avgRating = ratingsArr.length ? (ratingsArr.reduce((a,b)=>a+b,0)/ratingsArr.length).toFixed(2) : "-";
+  document.getElementById("statAvgRating").textContent = avgRating;
+  // أكثر جنسية
+  let topNat = "-";
+  if (providers.length) {
+    const count = {};
+    providers.forEach(p => count[p.nationality] = (count[p.nationality]||0)+1);
+    topNat = Object.entries(count).sort((a,b)=>b[1]-a[1])[0][0];
+  }
+  document.getElementById("statTopNat").textContent = topNat;
+}
+
+// --- Download all data as CSV ---
+function downloadAllData() {
+  const csvHeaders = [
+    "الاسم", "الجنسية", "الجنس", "القسم", "التخصص", "المنطقة", "رقم الهاتف", "الرقم المدني", "الخبرة", "التوفر", "التقييم"
+  ];
+  const rows = [csvHeaders.join(",")];
+  for(const p of providers) {
+    const sec = sections.find(s => s.id === p.section) || {};
+    const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+    rows.push([
+      p.name,
+      p.nationality,
+      p.gender === "M" ? "ذكر" : "أنثى",
+      sec.name || "-",
+      sub.label || "-",
+      p.location,
+      b64d(p.phone),
+      b64d(p.civilid),
+      (p.bio||"-").replace(/,/g, "،"),
+      (p.availability||[]).join(";"),
+      getAvgRating(p.id, p.rating)
+    ].map(x => `"${x}"`).join(","));
+  }
+  const blob = new Blob([rows.join("\n")], {type: "text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "foran_providers_data.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast("تم تحميل ملف البيانات.");
+}
+
+// --- Modal System ---
+const modalRoot = document.getElementById("modalRoot");
+let currentModalClose = null;
+
+function openModal({title="", content="", onShow=null}) {
+  if(modalRoot.classList.contains("visible")) return; // already open
+  modalRoot.innerHTML = `
+    <div class="modal-bg" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="0">
+      <div class="modal-box">
+        <button class="modal-close" aria-label="إغلاق النافذة" type="button">✖</button>
+        <h3 id="modalTitle" style="margin:12px 0;">${title}</h3>
+        <div class="modal-content-scroll">${content}</div>
+      </div>
+    </div>
+  `;
+  modalRoot.classList.remove("hidden");
+  modalRoot.classList.add("visible");
+  const closeBtn = modalRoot.querySelector(".modal-close");
+  closeBtn.focus();
+  closeBtn.addEventListener("click", closeModal);
+  currentModalClose = closeModal;
+
+  if(typeof onShow === "function") onShow(modalRoot.querySelector(".modal-box"));
+
+  // Trap focus inside modal
+  trapFocus(modalRoot.querySelector(".modal-bg"));
+}
+
+function closeModal() {
+  modalRoot.innerHTML = "";
+  modalRoot.classList.add("hidden");
+  modalRoot.classList.remove("visible");
+  currentModalClose = null;
+  document.activeElement.blur();
+  main.focus();
+}
+
+function trapFocus(element) {
+  const focusableEls = element.querySelectorAll("a[href],button:not([disabled]),textarea,select,input,[tabindex]:not([tabindex='-1'])");
+  const firstFocusableEl = focusableEls[0];
+  const lastFocusableEl = focusableEls[focusableEls.length - 1];
+  element.addEventListener("keydown", function(e) {
+    const isTabPressed = (e.key === 'Tab');
+    if (!isTabPressed) return;
+    if (e.shiftKey) {
+      if(document.activeElement === firstFocusableEl) {
+        lastFocusableEl.focus();
+        e.preventDefault();
+      }
+    } else {
+      if(document.activeElement === lastFocusableEl) {
+        firstFocusableEl.focus();
+        e.preventDefault();
+      }
+    }
+  });
+}
+
+// --- Charts ---
+let pieSectionChart = null;
+let barNationalityChart = null;
+
+function drawCharts() {
+  // Pie by section
+  const ctxPie = document.getElementById("pieSection");
+  if (ctxPie) {
+    try {
+      if (pieSectionChart) pieSectionChart.destroy();
+    } catch (e) {}
+    const counts = {};
+    for (const s of sections) counts[s.name] = 0;
+    providers.forEach(p => {
+      const secName = (sections.find(s => s.id === p.section) || {}).name;
+      if (secName) counts[secName] = (counts[secName] || 0) + 1;
+    });
+    const labels = Object.keys(counts);
+    const data = Object.values(counts);
+
+    pieSectionChart = new Chart(ctxPie, {
+      type: 'pie',
+      data: {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: [
+            '#27bda5', '#ffd200', '#ff6f00', '#29b6f6', '#c0392b',
+            '#9c27b0', '#43a047', '#ff9800', '#8bc34a', '#f44336'
+          ],
+          borderColor: '#fff',
+          borderWidth: 1.5
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { family: 'Cairo' } } }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  }
+
+  // Bar by nationality
+  const ctxBar = document.getElementById("barNationality");
+  if (ctxBar) {
+    try {
+      if (barNationalityChart) barNationalityChart.destroy();
+    } catch (e) {}
+    // عدّ المزودين حسب الجنسية
+    const natCounts = {};
+    providers.forEach(p => {
+      const nat = p.nationality || "غير محدد";
+      natCounts[nat] = (natCounts[nat] || 0) + 1;
+    });
+    // ترتيب الجنسيات الأكثر ظهوراً
+    const sortedNats = Object.entries(natCounts).sort((a, b) => b[1] - a[1]);
+    const top7 = sortedNats.slice(0, 7);
+    const othersCount = sortedNats.slice(7).reduce((sum, x) => sum + x[1], 0);
+    const natLabels = top7.map(x => x[0]).concat(othersCount > 0 ? ["أخرى"] : []);
+    const natData = top7.map(x => x[1]).concat(othersCount > 0 ? [othersCount] : []);
+
+    barNationalityChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: natLabels,
+        datasets: [{
+          label: 'عدد المزودين',
+          data: natData,
+          backgroundColor: '#27bda5'
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { display: false }
+        },
+        responsive: false, // لتقليل التشنج في الأجهزة الضعيفة
+        maintainAspectRatio: false,
+        scales: {
+          x: { ticks: { font: { family: 'Cairo' } } },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
+      }
+    });
+  }
+}
+// --- Dark mode toggle ---
+const themeBtn = document.getElementById("themeBtn");
+function setDarkMode(dark) {
+  if(dark) {
+    document.body.classList.add("dark");
+    themeBtn.setAttribute("aria-pressed","true");
+  } else {
+    document.body.classList.remove("dark");
+    themeBtn.setAttribute("aria-pressed","false");
+  }
+}
+themeBtn.addEventListener("click", () => {
+  const dark = !document.body.classList.contains("dark");
+  setDarkMode(dark);
+  localStorage.setItem("darkMode", dark ? "on" : "off");
+});
+(function() {
+  const saved = localStorage.getItem("darkMode");
+  setDarkMode(saved === "on");
+})();
+
+// --- Init ---
+document.getElementById("adminBtn").addEventListener("click", () => {
+  if(adminActive) navigate("admin");
+  else adminLogin();
+});
+document.getElementById("feedbackBtn").addEventListener("click", showFeedbackModal);
+
+sidebar.querySelectorAll("button[data-page]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    navigate(btn.dataset.page);
+  });
+});
+
+navigate("home");
+
+function openWhatsApp(phone, name, subLabel, availability) {
+  // يحوّل الرقم لصيغة دولية لو ناقص
+  phone = phone.replace(/[^\d]/g, "");
+  if (phone.startsWith("0")) phone = "968" + phone.slice(1);
+  if (!phone.startsWith("968") && phone.length <= 9) phone = "968" + phone;
+  const msg = encodeURIComponent(`السلام عليكم، لدي طلب بخصوص الخدمة. 
+- الاسم: ${name}
+- التخصص: ${subLabel}
+- التوفر: ${availability}`);
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
+
+function downloadAllDataPdf() {
+  // PDF سريع بدون مكتبات خارجية (باستخدام نافذة الطباعة)
+  let html = `
+    <html dir="rtl">
+    <head>
+      <title>بيانات مزودي الخدمة</title>
+      <style>
+        body { font-family: 'Cairo', Tahoma, Arial, sans-serif; margin: 30px; color: #222; }
+        table { border-collapse: collapse; width: 100%; margin-top: 18px; }
+        th, td { border: 1px solid #8883; padding: 8px 7px; font-size: 1em; }
+        th { background: #18456e; color: #fff; font-size:1.07em;}
+        tr:nth-child(even) { background: #f7fafd; }
+      </style>
+    </head>
+    <body>
+      <h2>بيانات مزودي الخدمة</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم</th>
+            <th>الجنسية</th>
+            <th>الجنس</th>
+            <th>القسم</th>
+            <th>التخصص</th>
+            <th>المنطقة</th>
+            <th>الهاتف</th>
+            <th>الرقم المدني</th>
+            <th>الخبرة</th>
+            <th>التوفر</th>
+            <th>التقييم</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            providers.map(p => {
+              const sec = sections.find(s => s.id === p.section) || {};
+              const sub = (sec.sub || []).find(x => x.id === p.sub) || {};
+              return `<tr>
+                <td>${p.name}</td>
+                <td>${p.nationality}</td>
+                <td>${p.gender === "M" ? "ذكر" : "أنثى"}</td>
+                <td>${sec.name || "-"}</td>
+                <td>${sub.label || "-"}</td>
+                <td>${p.location}</td>
+                <td>${b64d(p.phone)}</td>
+                <td>${b64d(p.civilid)}</td>
+                <td>${(p.bio||"-")}</td>
+                <td>${(p.availability||[]).join(";")}</td>
+                <td>${getAvgRating(p.id, p.rating)}</td>
+              </tr>`;
+            }).join("")
+          }
+        </tbody>
+      </table>
+<script>window.onload = function(){ window.print(); setTimeout(()=>window.close(), 1200); }
+    </body>
+    </html>
+  `;
+  const w = window.open("", "_blank");
+  w.document.write(html);
+  w.document.close();
+}
+
+</script>
+</script>
+
+<!-- ⭐ Service Worker (PWA) - مدمج مع الصفحة -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    const swCode = `
+      const CACHE_NAME = 'foran-cache-v1';
+      const URLS_TO_CACHE = [
+        location.pathname,
+        'https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'
+      ];
+      self.addEventListener('install', e => {
+        e.waitUntil(
+          caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(URLS_TO_CACHE))
+        );
+      });
+      self.addEventListener('fetch', e => {
+        e.respondWith(
+          caches.match(e.request)
+            .then(res => res || fetch(e.request))
+        );
+      });
+      self.addEventListener('activate', e => {
+        e.waitUntil(
+          caches.keys().then(keys =>
+            Promise.all(
+              keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            )
+          )
+        );
+      });
+    `;
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).then(function(reg) {
+      setTimeout(()=>URL.revokeObjectURL(swUrl), 5000);
+    });
+  });
+}
+</script>
+
+<!-- ⭐ Service Worker (PWA) - كل شيء مدمج داخل index.html -->
+<script>
+// ✅ تسجيل وتوليد sw.js مباشرة من الصفحة (بدون ملفات خارجية)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    // ننشئ sw من نص JS هنا (بدل ملف خارجي)
+    const swCode = `
+      const CACHE_NAME = 'foran-cache-v1';
+      const URLS_TO_CACHE = [
+        location.pathname, // الصفحة نفسها
+        // أضف هنا المسارات الثابتة مثل الخطوط والصور المهمة (من ملفك)
+        'https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap'
+      ];
+
+      self.addEventListener('install', e => {
+        e.waitUntil(
+          caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(URLS_TO_CACHE))
+        );
+      });
+
+      self.addEventListener('fetch', e => {
+        e.respondWith(
+          caches.match(e.request)
+            .then(res => res || fetch(e.request))
+        );
+      });
+
+      self.addEventListener('activate', e => {
+        e.waitUntil(
+          caches.keys().then(keys =>
+            Promise.all(
+              keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            )
+          )
+        );
+      });
+    `;
+    // ننشئ ملف SW ديناميكي
+    const blob = new Blob([swCode], {type: 'application/javascript'});
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).then(function(reg) {
+      // مسح الرابط بعد التسجيل (اختياري)
+      setTimeout(()=>URL.revokeObjectURL(swUrl), 5000);
+    });
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "appId": "com.foran.app",
+  "appName": "فوراً",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
